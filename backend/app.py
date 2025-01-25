@@ -1,3 +1,4 @@
+from flask_cors import CORS
 from flask import Flask, send_from_directory, request, jsonify
 import os
 from dotenv import load_dotenv
@@ -10,6 +11,9 @@ from bson import ObjectId  # Importar el módulo bson
 load_dotenv()
 
 app = Flask(__name__)
+
+# Deshabilitar CORS completamente (sin restricciones)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Configuración de MongoDB
 MONGO_URI = os.getenv("MONGO_URI")
