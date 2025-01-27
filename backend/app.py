@@ -4,15 +4,16 @@ import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
-from bson import ObjectId  # Importar el módulo bson
+from bson import ObjectId
 
-
-# Cargar las variables de entorno desde el archivo .env
+# Cargar variables de entorno
 load_dotenv()
 
-app = Flask(__name__)
-
-# Deshabilitar CORS completamente (sin restricciones)
+app = Flask(
+    __name__,
+    static_folder="frontend/components",
+    template_folder="frontend/views"
+)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Configuración de MongoDB
@@ -21,13 +22,15 @@ client = MongoClient(MONGO_URI)
 db = client.get_database()
 users_collection = db.users
 
-# Ruta para servir el HTML principal
+@app.route('/')
+def serve_index():
+    return send_from_directory('frontend/views', 'index.html')
+
 @app.route('/<filename>')
 def serve_component(filename):
     components_folder = os.path.join(os.getcwd(), 'frontend', 'views')
     return send_from_directory(components_folder, filename)
 
-# Ruta personalizada para servir archivos estáticos (como JS)
 @app.route('/frontend/components/<filename>')
 def serve_cdn(filename):
     static_folder = os.path.join(os.getcwd(), 'frontend', 'components')
